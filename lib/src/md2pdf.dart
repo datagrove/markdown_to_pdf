@@ -130,7 +130,7 @@ mdtopdf(String path, String out) async {
     md.HeaderWithIdSyntax(),
     md.SetextHeaderWithIdSyntax(),
   ]);
-  File("example/test.html").writeAsString(htmlx);
+  File("$out.html").writeAsString(htmlx);
   var document = parse(htmlx);
   final doc = pw.Document();
   Visitor(doc)
