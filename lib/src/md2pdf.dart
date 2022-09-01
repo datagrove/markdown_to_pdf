@@ -99,6 +99,10 @@ class Visitor {
             s = pw.TextStyle();
             break;
         }
+        if (span.isNotEmpty) {
+          text.add(pw.RichText(text: pw.TextSpan(children: span)));
+          span = [];
+        }
         if (s != null) {
           text.add(pw.Text(e.text, style: s));
         }
