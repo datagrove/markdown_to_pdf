@@ -3,7 +3,7 @@ import 'package:args/args.dart';
 import 'dart:io';
 import 'package:path/path.dart' as p;
 
-void main2(List<String> arguments) async {
+void main(List<String> arguments) async {
   exitCode = 0; // presume success
   final parser = ArgParser();
   //..addFlag(lineNumber, negatable: false, abbr: 'n');
