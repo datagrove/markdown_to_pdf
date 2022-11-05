@@ -63,6 +63,15 @@ class Visitor {
 
             break;
           case "h1":
+           Text('___________________________________________________________________________________');
+            f = pw.Divider(
+              height: 30,
+              indent: -30,
+              endIndent: -30,
+              thickness: 0.5,
+              color: PdfColor.fromInt(000000),
+            );
+            text.add(f);
             s = pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 20);
             break;
           case "h2":
@@ -107,8 +116,15 @@ class Visitor {
           text.add(pw.RichText(text: pw.TextSpan(children: span)));
           span = [];
         }
+        if (divider.isNotEmpty) {
+          divider.add(pw.Divider(thickness: 100));
+        }
         if (s != null) {
           text.add(pw.Text(e.text, style: s));
+        }
+        if (f != null) {
+          divider.add(pw.Divider(
+              height: 100, thickness: 100, color: PdfColor.fromInt(050609)));
         }
         break;
       case Node.TEXT_NODE:
