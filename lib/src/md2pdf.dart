@@ -9,7 +9,6 @@ class Visitor {
   pw.Document doc;
 
   List<pw.Widget> text = [];
-  List<pw.Divider> divider = [];
   List<pw.TextSpan> span = [];
   Visitor(this.doc);
 
@@ -55,12 +54,9 @@ class Visitor {
         }
 
         pw.TextStyle? s = null;
-        pw.Divider? f = null;
         switch (e.localName) {
           case "blockquote":
             s = pw.TextStyle();
-            f = pw.Divider();
-
             break;
           case "h1":
            Text('___________________________________________________________________________________');
