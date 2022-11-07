@@ -9,10 +9,12 @@ class Visitor {
   pw.Document doc;
 
   List<pw.Widget> text = [];
+  List<pw.Divider> divider = [];
   List<pw.TextSpan> span = [];
   Visitor(this.doc);
 
   finish() {
+    var test = "in the finish function"; //the value of the local variable
     doc.addPage(pw.MultiPage(build: (context) => text));
   }
 
@@ -54,20 +56,22 @@ class Visitor {
         }
 
         pw.TextStyle? s = null;
+        pw.Divider? f = null;
         switch (e.localName) {
           case "blockquote":
             s = pw.TextStyle();
+            f = pw.Divider();
+
             break;
           case "h1":
-           Text('___________________________________________________________________________________');
             f = pw.Divider(
               height: 30,
-              indent: -30,
-              endIndent: -30,
+              indent: 30,
+              endIndent: 30,
               thickness: 0.5,
               color: PdfColor.fromInt(000000),
             );
-            text.add(f);
+          // text.add(f);
             s = pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 20);
             break;
           case "h2":
@@ -86,6 +90,14 @@ class Visitor {
             s = pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10);
             break;
           case "hr":
+            f = pw.Divider(
+              height: 7,
+              indent: 30,
+              endIndent: 30,
+              thickness: 0.5,
+              color: PdfColor.fromInt(000000),
+            );
+            text.add(f);
             s = pw.TextStyle();
             break;
           case "img":
