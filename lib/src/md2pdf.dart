@@ -34,6 +34,7 @@ class Style {
     weight ??= s.weight;
     height ??= s.height;
     fontStyle ??= s.fontStyle;
+
     return this;
   }
 
@@ -121,7 +122,9 @@ class Styler {
           case "strong":
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
-
+          case "a":
+            return Chunk(
+                text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
           // BLOCKS
           // blocks can contain blocks or spans
           case "h1":
@@ -132,6 +135,22 @@ class Styler {
             return Chunk(
                 widget: widgetChildren(
                     e, Style(weight: pw.FontWeight.bold, height: 18)));
+          case "h3":
+            return Chunk(
+                widget: widgetChildren(
+                    e, Style(weight: pw.FontWeight.bold, height: 16)));
+          case "h4":
+            return Chunk(
+                widget: widgetChildren(
+                    e, Style(weight: pw.FontWeight.bold, height: 14)));
+          case "h5":
+            return Chunk(
+                widget: widgetChildren(
+                    e, Style(weight: pw.FontWeight.bold, height: 12)));
+          case "h6":
+            return Chunk(
+                widget: widgetChildren(
+                    e, Style(weight: pw.FontWeight.bold, height: 10)));
           case "pre":
           case "body":
             return Chunk(widget: widgetChildren(e, Style()));
