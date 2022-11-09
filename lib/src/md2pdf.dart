@@ -1,149 +1,159 @@
 import 'dart:io';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:markdown/markdown.dart' as md;
 
-class Visitor {
-  pw.Document doc;
-
-  List<pw.Widget> text = [];
-  List<pw.Divider> divider = [];
-  List<pw.TextSpan> span = [];
-  Visitor(this.doc);
-
-  finish() {
-    var test = "in the finish function"; //the value of the local variable
-    doc.addPage(pw.MultiPage(build: (context) => text));
+// computed style is a stack, each time we encounter an element like <p>... we push its style onto the stack, then pop it off at </p>
+// the top of the stack merges all of the styles of the parents.
+class ComputedStyle {
+  List<Style> stack = [Style()];
+  push(Style? s) {
+    var base = stack.last;
+    s = s ?? Style();
+    stack.add(s.merge(base));
   }
 
-  add(String s) {
-    text.add(pw.Text(s));
+  pop() {
+    stack.removeLast();
   }
 
-  visit(Element? e) {
-    if (e == null) return;
-    print(e);
+  pw.TextStyle style() {
+    return stack.last.style();
+  }
+}
 
+// you will need to add more attributes here, just follow the pattern.
+class Style {
+  pw.FontWeight? weight;
+  double? height;
+  pw.FontStyle? fontStyle;
+  Style({this.weight, this.height, this.fontStyle});
+
+  Style merge(Style s) {
+    weight ??= s.weight;
+    height ??= s.height;
+    fontStyle ??= s.fontStyle;
+    return this;
+  }
+
+  pw.TextStyle style() {
+    return pw.TextStyle(
+      fontWeight: weight,
+      fontSize: height,
+    );
+  }
+}
+
+// each node is formatted as a chunk. A chunk can be a list of widgets ready to format, or a series of text spans that will be incorporated into a parent widget.
+class Chunk {
+  List<pw.Widget>? widget;
+  pw.TextSpan? text;
+  Chunk({this.widget, this.text});
+}
+
+// post order traversal of the html tree, recursively format each node.
+class Styler {
+  var style = ComputedStyle();
+
+  Chunk formatStyle(Node e, Style s) {
+    style.push(s);
+    var o = format(e);
+    style.pop();
+    return o;
+  }
+
+  List<pw.Widget> widgetChildren(Node e, Style? s) {
+    style.push(s);
+    List<pw.Widget> r = [];
+    List<pw.TextSpan> spans = [];
+    clear() {
+      if (spans.isNotEmpty) {
+        // turn text into widget
+        r.add(pw.RichText(text: pw.TextSpan(children: spans)));
+        spans = [];
+      }
+    }
+
+    for (var o in e.nodes) {
+      var ch = format(o);
+      if (ch.widget != null) {
+        clear();
+        r = [...r, ...ch.widget!];
+      } else if (ch.text != null) {
+        spans.add(ch.text!);
+      }
+    }
+    clear();
+    style.pop();
+    return r;
+  }
+
+  pw.TextSpan inlineChildren(Node e, Style? s) {
+    style.push(s);
+    List<pw.InlineSpan> r = [];
+    for (var o in e.nodes) {
+      var ch = format(o);
+      if (ch.text != null) {
+        r.add(ch.text!);
+      }
+    }
+    style.pop();
+    return pw.TextSpan(children: r);
+  }
+
+  // I only implmenented necessary ones, but follow the pattern
+
+  Chunk format(Node e) {
     switch (e.nodeType) {
-      case Node.ELEMENT_NODE:
-        // handle inline
-        switch (e.localName) {
-          case "a":
-            var href = e.attributes["href"];
-            print("href $href");
-            text.add(pw.UrlLink(
-                destination: href ?? "www.datagrove.com",
-                child: pw.Text(e.text,
-                    style: pw.TextStyle(color: PdfColors.blue))));
-            return;
-          case "strong":
-            span.add(pw.TextSpan(
-                text: e.text,
-                style: pw.TextStyle(fontWeight: pw.FontWeight.bold)));
-
-            return;
-          case "em":
-            span.add(pw.TextSpan(
-                text: e.text,
-                style: pw.TextStyle(fontStyle: pw.FontStyle.italic)));
-            return;
-          case "code":
-            span.add(pw.TextSpan(
-                text: e.text, style: pw.TextStyle(color: PdfColors.green)));
-            return;
-        }
-
-        pw.TextStyle? s = null;
-        pw.Divider? f = null;
-        switch (e.localName) {
-          case "blockquote":
-            s = pw.TextStyle();
-            f = pw.Divider();
-
-            break;
-          case "h1":
-            f = pw.Divider(
-              height: 30,
-              indent: 30,
-              endIndent: 30,
-              thickness: 0.5,
-              color: PdfColor.fromInt(000000),
-            );
-          // text.add(f);
-            s = pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 20);
-            break;
-          case "h2":
-            s = pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 18);
-            break;
-          case "h3":
-            s = pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16);
-            break;
-          case "h4":
-            s = pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14);
-            break;
-          case "h5":
-            s = pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12);
-            break;
-          case "h6":
-            s = pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10);
-            break;
-          case "hr":
-            f = pw.Divider(
-              height: 7,
-              indent: 30,
-              endIndent: 30,
-              thickness: 0.5,
-              color: PdfColor.fromInt(000000),
-            );
-            text.add(f);
-            s = pw.TextStyle();
-            break;
-          case "img":
-            s = pw.TextStyle();
-            break;
-          case "li":
-            s = pw.TextStyle();
-            break;
-          case "ol":
-            s = pw.TextStyle();
-            break;
-          case "p":
-            s = pw.TextStyle();
-            break;
-          case "pre":
-            s = pw.TextStyle();
-            break;
-
-          case "ul":
-            s = pw.TextStyle();
-            break;
-        }
-        if (span.isNotEmpty) {
-          text.add(pw.RichText(text: pw.TextSpan(children: span)));
-          span = [];
-        }
-        if (divider.isNotEmpty) {
-          divider.add(pw.Divider(thickness: 100));
-        }
-        if (s != null) {
-          text.add(pw.Text(e.text, style: s));
-        }
-        if (f != null) {
-          divider.add(pw.Divider(
-              height: 100, thickness: 100, color: PdfColor.fromInt(050609)));
-        }
-        break;
       case Node.TEXT_NODE:
-        print(e);
-        if (e.text.isNotEmpty) {}
-    }
+        return Chunk(
+            text: pw.TextSpan(baseline: 0, style: style.style(), text: e.text));
+      case Node.ELEMENT_NODE:
+        e as Element;
+        // for (var o in e.attributes.entries) { o.key; o.value;}
+        switch (e.localName) {
+          // SPANS
+          // spans can contain text or other spans
+          case "span":
+          case "code":
+            return Chunk(text: inlineChildren(e, Style()));
+          case "strong":
+            return Chunk(
+                text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
 
-    var o = e.children;
-    for (var k in o) {
-      visit(k);
+          // BLOCKS
+          // blocks can contain blocks or spans
+          case "h1":
+            return Chunk(
+                widget: widgetChildren(
+                    e, Style(weight: pw.FontWeight.bold, height: 20)));
+          case "h2":
+            return Chunk(
+                widget: widgetChildren(
+                    e, Style(weight: pw.FontWeight.bold, height: 18)));
+          case "pre":
+          case "body":
+            return Chunk(widget: widgetChildren(e, Style()));
+          case "p":
+            return Chunk(widget: widgetChildren(e, Style()));
+          default:
+            print("${e.localName} is unknown");
+            return Chunk(widget: widgetChildren(e, Style()));
+        }
+      case Node.ENTITY_NODE:
+      case Node.ENTITY_REFERENCE_NODE:
+      case Node.NOTATION_NODE:
+      case Node.PROCESSING_INSTRUCTION_NODE:
+      case Node.ATTRIBUTE_NODE:
+      case Node.CDATA_SECTION_NODE:
+      case Node.COMMENT_NODE:
+      case Node.DOCUMENT_FRAGMENT_NODE:
+      case Node.DOCUMENT_NODE:
+      case Node.DOCUMENT_TYPE_NODE:
+        print("${e.nodeType} is unknown node type");
     }
+    return Chunk();
   }
 }
 
@@ -160,9 +170,11 @@ mdtopdf(String path, String out) async {
   ]);
   File("$out.html").writeAsString(htmlx);
   var document = parse(htmlx);
-  final doc = pw.Document();
-  Visitor(doc)
-    ..visit(document.body)
-    ..finish();
+  if (document.body == null) {
+    return;
+  }
+  Chunk ch = Styler().format(document.body!);
+  var doc = pw.Document();
+  doc.addPage(pw.MultiPage(build: (context) => ch.widget ?? []));
   File(out).writeAsBytes(await doc.save());
 }
