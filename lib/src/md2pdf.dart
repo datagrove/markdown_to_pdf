@@ -3,6 +3,7 @@ import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:markdown/markdown.dart' as md;
+import 'package:pdf/pdf.dart' as p;
 import 'package:pdf/pdf.dart';
 
 // computed style is a stack, each time we encounter an element like <p>... we push its style onto the stack, then pop it off at </p>
@@ -29,17 +30,19 @@ class Style {
   pw.FontWeight? weight;
   double? height;
   pw.FontStyle? fontStyle;
+  p.PdfColor? color;
   Style({
     this.weight,
     this.height,
     this.fontStyle,
+    this.color,
   });
 
   Style merge(Style s) {
     weight ??= s.weight;
     height ??= s.height;
     fontStyle ??= s.fontStyle;
-
+    color ??= s.color;
     return this;
   }
 
@@ -47,6 +50,7 @@ class Style {
     return pw.TextStyle(
       fontWeight: weight,
       fontSize: height,
+      color: color
     );
   }
 }
@@ -130,7 +134,8 @@ class Styler {
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
           case "a":
-            return Chunk(text: inlineChildren(e, Style(TextStyle: PdfColors.green)));
+            return Chunk(
+                text: inlineChildren(e, Style(color: PdfColors.green)));
 
           // blocks can contain blocks or spans
           case "h1":
