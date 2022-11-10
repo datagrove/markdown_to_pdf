@@ -3,6 +3,7 @@ import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:markdown/markdown.dart' as md;
+import 'package:pdf/pdf.dart';
 
 // computed style is a stack, each time we encounter an element like <p>... we push its style onto the stack, then pop it off at </p>
 // the top of the stack merges all of the styles of the parents.
@@ -28,7 +29,11 @@ class Style {
   pw.FontWeight? weight;
   double? height;
   pw.FontStyle? fontStyle;
-  Style({this.weight, this.height, this.fontStyle});
+  Style({
+    this.weight,
+    this.height,
+    this.fontStyle,
+  });
 
   Style merge(Style s) {
     weight ??= s.weight;
@@ -56,6 +61,8 @@ class Chunk {
 // post order traversal of the html tree, recursively format each node.
 class Styler {
   var style = ComputedStyle();
+
+  get text => null;
 
   Chunk formatStyle(Node e, Style s) {
     style.push(s);
@@ -123,9 +130,8 @@ class Styler {
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
           case "a":
-            return Chunk(
-                text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
-          // BLOCKS
+            return Chunk(text: inlineChildren(e, Style(TextStyle: PdfColors.green)));
+
           // blocks can contain blocks or spans
           case "h1":
             return Chunk(
