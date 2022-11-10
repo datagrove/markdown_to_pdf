@@ -30,6 +30,7 @@ class Style {
   pw.FontWeight? weight;
   double? height;
   pw.FontStyle? fontStyle;
+  pw.UrlLink? urlLink;
   p.PdfColor? color;
   Style({
     this.weight,
@@ -47,11 +48,7 @@ class Style {
   }
 
   pw.TextStyle style() {
-    return pw.TextStyle(
-      fontWeight: weight,
-      fontSize: height,
-      color: color
-    );
+    return pw.TextStyle(fontWeight: weight, fontSize: height, color: color);
   }
 }
 
@@ -134,6 +131,9 @@ class Styler {
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
           case "a":
+            var href = e.attributes["href"];
+            print("href $href");
+            (pw.UrlLink(destination: href ?? "www.datagrove.com"));
             return Chunk(
                 text: inlineChildren(e, Style(color: PdfColors.green)));
 
