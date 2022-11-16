@@ -71,36 +71,28 @@ class Style {
   }
 }
 
-class Divider extends StatelessWidget {
-  Divider({
-    this.height,
-    this.thickness,
-    this.indent,
-    this.endIndent,
-    this.color,
-    this.borderStyle,
-  })  : assert(height == null || height >= 0.0),
-        assert(thickness == null || thickness >= 0.0),
-        assert(indent == null || indent >= 0.0),
-        assert(endIndent == null || endIndent >= 0.0);
+class BorderStyle {
+  const BorderStyle({
+    this.paint = true,
+    this.pattern,
+    this.phase = 0,
+  });
 
-  /// The color to use when painting the line.
-  final PdfColor? color;
+  static const none = BorderStyle(paint: false);
+  static const solid = BorderStyle();
+  static const dashed = BorderStyle(pattern: <int>[3, 3]);
+  static const dotted = BorderStyle(pattern: <int>[1, 1]);
 
-  /// The amount of empty space to the trailing edge of the divider.
-  final double? endIndent;
+  /// Paint this line
+  final bool paint;
 
-  /// The divider's height extent.
-  final double? height;
+  /// Lengths of alternating dashes and gaps. The numbers shall be nonnegative
+  /// and not all zero.
+  final List<num>? pattern;
 
-  /// The amount of empty space to the leading edge of the divider.
-  final double? indent;
-
-  /// The thickness of the line drawn within the divider.
-  final double? thickness;
-
-  /// The border style of the divider
-  final BorderStyle? borderStyle;
+  /// Specify the distance into the dash pattern at which to start the dash.
+  final int phase;
+}
 
 // each node is formatted as a chunk. A chunk can be a list of widgets ready to format, or a series of text spans that will be incorporated into a parent widget.
 class Chunk {
@@ -181,7 +173,8 @@ class Styler {
           case "code":
             return Chunk(text: inlineChildren(e, Style()));
           case "hr":
-            return Chunk(widget: Divider({double? height, double? thickness, double? indent, double? endIndent, PdfColor? color, BorderStyle? borderStyle}));
+            return Chunk(
+              widget: [pw.Divider()]);
           case "strong":
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
