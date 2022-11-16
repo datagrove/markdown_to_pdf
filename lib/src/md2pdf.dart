@@ -175,6 +175,9 @@ class Styler {
           case "hr":
             return Chunk(
               widget: [pw.Divider()]);
+          case "li":
+            return Chunk(
+              widget: [pw.Bullet()]);
           case "strong":
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
