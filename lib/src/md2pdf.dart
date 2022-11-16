@@ -186,27 +186,27 @@ class Styler {
           case "h1":
             return Chunk(
                 widget: widgetChildren(
-                    e, Style(weight: pw.FontWeight.bold, height: 20)));
+                    e, Style(weight: pw.FontWeight.bold, height: 24)));
           case "h2":
             return Chunk(
                 widget: widgetChildren(
-                    e, Style(weight: pw.FontWeight.bold, height: 18)));
+                    e, Style(weight: pw.FontWeight.bold, height: 22)));
           case "h3":
             return Chunk(
                 widget: widgetChildren(
-                    e, Style(weight: pw.FontWeight.bold, height: 16)));
+                    e, Style(weight: pw.FontWeight.bold, height: 20)));
           case "h4":
             return Chunk(
                 widget: widgetChildren(
-                    e, Style(weight: pw.FontWeight.bold, height: 14)));
+                    e, Style(weight: pw.FontWeight.bold, height: 18)));
           case "h5":
             return Chunk(
                 widget: widgetChildren(
-                    e, Style(weight: pw.FontWeight.bold, height: 12)));
+                    e, Style(weight: pw.FontWeight.bold, height: 16)));
           case "h6":
             return Chunk(
                 widget: widgetChildren(
-                    e, Style(weight: pw.FontWeight.bold, height: 10)));
+                    e, Style(weight: pw.FontWeight.bold, height: 14)));
           case "pre":
           case "body":
             return Chunk(widget: widgetChildren(e, Style()));
