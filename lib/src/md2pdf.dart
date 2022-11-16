@@ -30,7 +30,7 @@ class _UrlText extends pw.StatelessWidget {
 
   final String text;
   final String url;
-  
+
   @override
   pw.Widget build(pw.Context context) {
     return pw.UrlLink(
@@ -39,7 +39,8 @@ class _UrlText extends pw.StatelessWidget {
           style: const pw.TextStyle(
             decoration: pw.TextDecoration.underline,
             color: PdfColors.blue,
-          )),);
+          )),
+    );
   }
 }
 
@@ -69,6 +70,37 @@ class Style {
     return pw.TextStyle(fontWeight: weight, fontSize: height, color: color);
   }
 }
+
+class Divider extends StatelessWidget {
+  Divider({
+    this.height,
+    this.thickness,
+    this.indent,
+    this.endIndent,
+    this.color,
+    this.borderStyle,
+  })  : assert(height == null || height >= 0.0),
+        assert(thickness == null || thickness >= 0.0),
+        assert(indent == null || indent >= 0.0),
+        assert(endIndent == null || endIndent >= 0.0);
+
+  /// The color to use when painting the line.
+  final PdfColor? color;
+
+  /// The amount of empty space to the trailing edge of the divider.
+  final double? endIndent;
+
+  /// The divider's height extent.
+  final double? height;
+
+  /// The amount of empty space to the leading edge of the divider.
+  final double? indent;
+
+  /// The thickness of the line drawn within the divider.
+  final double? thickness;
+
+  /// The border style of the divider
+  final BorderStyle? borderStyle;
 
 // each node is formatted as a chunk. A chunk can be a list of widgets ready to format, or a series of text spans that will be incorporated into a parent widget.
 class Chunk {
@@ -129,6 +161,9 @@ class Styler {
     return pw.TextSpan(children: r);
   }
 
+  pw.TextStyle? s = null;
+  pw.Divider? f = null;
+
   // I only implmenented necessary ones, but follow the pattern
 
   Chunk format(Node e) {
@@ -145,14 +180,16 @@ class Styler {
           case "span":
           case "code":
             return Chunk(text: inlineChildren(e, Style()));
+          case "hr":
+            return Chunk(widget: Divider({double? height, double? thickness, double? indent, double? endIndent, PdfColor? color, BorderStyle? borderStyle}));
           case "strong":
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
           case "a":
             return Chunk(
-              text: inlineChildren(e, Style(color: PdfColors.green)));
-            
-         // blocks can contain blocks or spans
+                text: inlineChildren(e, Style(color: PdfColors.green)));
+
+          // blocks can contain blocks or spans
           case "h1":
             return Chunk(
                 widget: widgetChildren(
