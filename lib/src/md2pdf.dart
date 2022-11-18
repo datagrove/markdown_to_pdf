@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
@@ -67,7 +68,7 @@ class Style {
   }
 
   pw.TextStyle style() {
-    return pw.TextStyle(fontWeight: weight, fontSize: height, color: color);
+    return pw.TextStyle(fontWeight: weight, fontSize: height, color: color, fontStyle: fontStyle);
   }
 }
 
@@ -158,6 +159,8 @@ class Styler {
 
   // I only implmenented necessary ones, but follow the pattern
 
+  int i = 0;
+
   Chunk format(Node e) {
     switch (e.nodeType) {
       case Node.TEXT_NODE:
@@ -173,14 +176,19 @@ class Styler {
           case "code":
             return Chunk(text: inlineChildren(e, Style()));
           case "hr":
-            return Chunk(
-              widget: [pw.Divider()]);
+            return Chunk(widget: [pw.Divider()]);
           case "li":
-            return Chunk(
-              widget: [pw.Bullet()]);
+            return Chunk(widget: [pw.Bullet(), ...widgetChildren(e, Style())]);
+          //case "ol":
+            //i++;
+            //return Chunk(
+              //  widget: [pw.Row(children: widgetChildren(e, Style()))]);
           case "strong":
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
+          case "em":
+            return Chunk(
+                text: inlineChildren(e, Style(fontStyle: pw.FontStyle.italic)));
           case "a":
             return Chunk(
                 text: inlineChildren(e, Style(color: PdfColors.green)));
