@@ -181,7 +181,7 @@ class Styler {
             return Chunk(text: inlineChildren(e, Style()));
           case "hr":
             return Chunk(widget: [pw.Divider()]);
-          case "ul":
+          case "li":
             return Chunk(
                 widget: [pw.SizedBox(
                   child:pw.Row(
