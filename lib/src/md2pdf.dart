@@ -68,7 +68,11 @@ class Style {
   }
 
   pw.TextStyle style() {
-    return pw.TextStyle(fontWeight: weight, fontSize: height, color: color, fontStyle: fontStyle);
+    return pw.TextStyle(
+        fontWeight: weight,
+        fontSize: height,
+        color: color,
+        fontStyle: fontStyle);
   }
 }
 
@@ -177,12 +181,21 @@ class Styler {
             return Chunk(text: inlineChildren(e, Style()));
           case "hr":
             return Chunk(widget: [pw.Divider()]);
-          case "li":
-            return Chunk(widget: [pw.Bullet(), ...widgetChildren(e, Style())]);
-          //case "ol":
-            //i++;
-            //return Chunk(
-              //  widget: [pw.Row(children: widgetChildren(e, Style()))]);
+          case "ul":
+            return Chunk(
+                widget: [pw.SizedBox(
+                  child:pw.Row(
+                    children: 
+                      [pw.SizedBox(child:pw.Column(
+                        children: [pw.Bullet()])),
+                      pw.SizedBox( 
+                        child: pw.Column(
+                          children: widgetChildren(e, Style())
+                          )
+                          )
+                  ])
+                        )
+                  ]);
           case "strong":
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
