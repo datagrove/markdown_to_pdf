@@ -189,22 +189,13 @@ class Styler {
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: <pw.Widget>[
                       pw.Container(
-                          padding: const pw.EdgeInsets.all(5),
+                          padding:
+                              const pw.EdgeInsets.all(5),
                           child: pw.Column(
                               crossAxisAlignment: pw.CrossAxisAlignment.start,
                               children: <pw.Widget>[
-                                pw.Row(
-                                  children: <pw.Widget>[
-                                    pw.Bullet(),
-                                    pw.Expanded(
-                                      child: pw.Column(
-                                        children: 
-                                          widgetChildren(e, Style()),
-                                        )
-                                    )
-                                  ]
-                                )
-                              
+                                pw.Bullet(),
+                                ...widgetChildren(e, Style())
                               ]))
                     ]))
               ])
