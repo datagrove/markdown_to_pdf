@@ -182,20 +182,15 @@ class Styler {
           case "hr":
             return Chunk(widget: [pw.Divider()]);
           case "li":
-            return Chunk(
-                widget: [pw.SizedBox(
-                  child:pw.Row(
-                    children: 
-                      [pw.SizedBox(child:pw.Column(
-                        children: [pw.Bullet()])),
-                      pw.SizedBox( 
-                        child: pw.Column(
-                          children: widgetChildren(e, Style())
-                          )
-                          )
-                  ])
-                        )
-                  ]);
+              return Chunk(
+                widget: 
+                  [pw.SizedBox(width: 50, child: pw.Partition(child: 
+                    pw.Container(padding: const pw.EdgeInsets.all(5), child: 
+                      pw.Row(children: [
+                        pw.FittedBox(child:
+                          pw.Bullet()),
+                        pw.Expanded(child: 
+                          pw.Column(children: widgetChildren(e, Style())))]))))]);
           case "strong":
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
