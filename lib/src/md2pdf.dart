@@ -182,15 +182,35 @@ class Styler {
           case "hr":
             return Chunk(widget: [pw.Divider()]);
           case "li":
-              return Chunk(
-                widget: 
-                  [pw.SizedBox(width: 50, child: pw.Partition(child: 
-                    pw.Container(padding: const pw.EdgeInsets.all(5), child: 
-                      pw.Row(children: [
-                        pw.FittedBox(child:
-                          pw.Bullet()),
-                        pw.Expanded(child: 
-                          pw.Column(children: widgetChildren(e, Style())))]))))]);
+            return Chunk(widget: [
+              pw.Partitions(children: [
+                pw.Partition(
+                    child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: <pw.Widget>[
+                      pw.Container(
+                          padding:
+                              const pw.EdgeInsets.only(left: 30, bottom: 20),
+                          child: pw.Row(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: <pw.Widget>[
+                                pw.Bullet(),
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    children: 
+                                      widgetChildren(e, Style()))
+                                      )
+                              ]))
+                    ]))
+              ])
+            ]);
+          // [pw.SizedBox(width: 50, child: pw.Partition(child:
+          //   pw.Container(padding: const pw.EdgeInsets.all(5), child:
+          //     pw.Row(children: [
+          //       pw.FittedBox(child:
+          //         pw.Bullet()),
+          //       pw.Expanded(child:
+          //         pw.Column(children: widgetChildren(e, Style())))]))))]);
           case "strong":
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
