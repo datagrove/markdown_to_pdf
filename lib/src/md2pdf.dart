@@ -177,29 +177,36 @@ class Styler {
           // SPANS
           // spans can contain text or other spans
           case "span":
+          // case "code":
+          //   return Chunk(text: inlineChildren(e, Style()));
           case "code":
-            return Chunk(text: inlineChildren(e, Style()));
+            return Chunk(widget: [
+              pw.Container(
+                  color: PdfColors.grey,
+                  child: pw.Column(
+                      children: [pw.Row(children: widgetChildren(e, Style()))]))
+            ]);
           case "hr":
             return Chunk(widget: [pw.Divider()]);
-          case "li":
-            return Chunk(widget: [
-              pw.Partitions(children: [
-                pw.Partition(
-                    child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: <pw.Widget>[
-                      pw.Container(
-                          padding:
-                              const pw.EdgeInsets.all(5),
-                          child: pw.Column(
-                              crossAxisAlignment: pw.CrossAxisAlignment.start,
-                              children: <pw.Widget>[
-                                pw.Bullet(),
-                                ...widgetChildren(e, Style())
-                              ]))
-                    ]))
-              ])
-            ]);
+          // case "li":
+          //   return Chunk(widget: [
+          //     pw.Partitions(children: [
+          //       pw.Partition(
+          //           child: pw.Column(
+          //               crossAxisAlignment: pw.CrossAxisAlignment.start,
+          //               children: <pw.Widget>[
+          //             pw.Container(
+          //                 padding:
+          //                     const pw.EdgeInsets.all(5),
+          //                 child: pw.Column(
+          //                     crossAxisAlignment: pw.CrossAxisAlignment.start,
+          //                     children: <pw.Widget>[
+          //                       pw.Bullet(),
+          //                       ...widgetChildren(e, Style())
+          //                     ]))
+          //           ]))
+          //     ])
+          //   ]);
           // [pw.SizedBox(width: 50, child: pw.Partition(child:
           //   pw.Container(padding: const pw.EdgeInsets.all(5), child:
           //     pw.Row(children: [
