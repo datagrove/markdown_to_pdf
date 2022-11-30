@@ -11,7 +11,7 @@ import 'package:pdf/pdf.dart';
 // the top of the stack merges all of the styles of the parents.
 class ComputedStyle {
   List<Style> stack = [Style()];
-  push(Style? s) {
+  push(Style? s, e) {
     var base = stack.last;
     s = s ?? Style();
     stack.add(s.merge(base));
@@ -59,15 +59,16 @@ class Style {
   int listNumber = 0;
   int? listIndent;
   pw.Widget? bullet;
-  Style({
-    this.weight,
-    this.height,
-    this.fontStyle,
-    this.color,
-    this.bullet,
-    this.listIndent = 0,
-    this.listNumber = 0 
-  });
+  Node? e;
+  Style(
+      {this.weight,
+      this.height,
+      this.fontStyle,
+      this.color,
+      this.bullet,
+      this.listIndent = 0,
+      this.listNumber = 0,
+      this.e});
 
   Style merge(Style s) {
     weight ??= s.weight;
@@ -124,14 +125,14 @@ class Styler {
   get text => null;
 
   Chunk formatStyle(Node e, Style s) {
-    style.push(s);
+    style.push(s, e);
     var o = format(e);
     style.pop();
     return o;
   }
 
   List<pw.Widget> widgetChildren(Node e, Style? s) {
-    style.push(s);
+    style.push(s, e);
     List<pw.Widget> r = [];
     List<pw.TextSpan> spans = [];
     clear() {
@@ -157,7 +158,7 @@ class Styler {
   }
 
   pw.TextSpan inlineChildren(Node e, Style? s) {
-    style.push(s);
+    style.push(s, e);
     List<pw.InlineSpan> r = [];
     for (var o in e.nodes) {
       var ch = format(o);
@@ -215,7 +216,9 @@ class Styler {
                     Style(
                         bullet: e.localName == "ul" ? pw.Bullet() : null,
                         listIndent: style.stack.last.listIndent ?? -4 + 4,
-                        listNumber: e.attributes["start"] == null ? 0 : int.parse(e.attributes["start"]!))));
+                        listNumber: e.attributes["start"] == null
+                            ? 0
+                            : int.parse(e.attributes["start"]!))));
           case "hr":
             return Chunk(widget: [pw.Divider()]);
           case "li":
