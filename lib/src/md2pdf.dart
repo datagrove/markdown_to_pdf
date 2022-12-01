@@ -11,9 +11,10 @@ import 'package:pdf/pdf.dart';
 // the top of the stack merges all of the styles of the parents.
 class ComputedStyle {
   List<Style> stack = [Style()];
-  push(Style? s, e) {
+  push(Style s, e) {
     var base = stack.last;
     s = s ?? Style();
+    s.e = e;
     stack.add(s.merge(base));
   }
 
@@ -26,8 +27,12 @@ class ComputedStyle {
   }
 
   Style parent() {
-    return stack[stack.length - 2];
+    return stack[stack.length - 1];
   }
+
+  // Style parent2() {
+  //   return stack[stack.length - 2];
+  // }
 }
 
 class _UrlText extends pw.StatelessWidget {
@@ -131,7 +136,7 @@ class Styler {
     return o;
   }
 
-  List<pw.Widget> widgetChildren(Node e, Style? s) {
+  List<pw.Widget> widgetChildren(Node e, Style s) {
     style.push(s, e);
     List<pw.Widget> r = [];
     List<pw.TextSpan> spans = [];
@@ -157,7 +162,7 @@ class Styler {
     return r;
   }
 
-  pw.TextSpan inlineChildren(Node e, Style? s) {
+  pw.TextSpan inlineChildren(Node e, Style s) {
     style.push(s, e);
     List<pw.InlineSpan> r = [];
     for (var o in e.nodes) {
@@ -210,15 +215,24 @@ class Styler {
           // blocks can contain blocks or spans
           case "ul":
           case "ol":
+            var ln;
+            final cl = e.attributes["start"];
+            if (cl != null) {
+              ln = int.parse(cl)-1;
+            } else {
+              ln = 0;
+            }
             return Chunk(
                 widget: widgetChildren(
                     e,
                     Style(
-                        bullet: e.localName == "ul" ? pw.Bullet() : null,
-                        listIndent: style.stack.last.listIndent ?? -4 + 4,
-                        listNumber: e.attributes["start"] == null
-                            ? 0
-                            : int.parse(e.attributes["start"]!))));
+                      bullet: e.localName == "ul" ? pw.Bullet() : null,
+                      listIndent: style.stack.last.listIndent ?? -4 + 4,
+                      listNumber: ln,
+                    )));
+          // listNumber: e.attributes["start"] == null
+          //     ? 0
+          //     : int.parse(e.attributes["start"]!))));
           case "hr":
             return Chunk(widget: [pw.Divider()]);
           case "li":

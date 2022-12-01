@@ -190,9 +190,9 @@ see [how to change output](https://github.com/markdown-it/markdown-it-emoji#chan
 
 ### [Footnotes](https://github.com/markdown-it/markdown-it-footnote)
 
-Footnote 1 link[^first].
+1. Footnote 1 link[^first].
 
-Footnote 2 link[^second].
+2. Footnote 2 link[^second].
 
 Inline footnote^[Text of inline footnote] definition.
 
