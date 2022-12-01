@@ -65,7 +65,6 @@ class Style {
   int listNumber = 0;
   pw.Container? container;
   int? listIndent;
-  int? blockIndent;
   pw.Widget? bullet;
   pw.TextDecoration? textDecoration;
   pw.BoxDecoration? boxDecoration;
@@ -79,7 +78,6 @@ class Style {
       this.bullet,
       this.container,
       this.listIndent = 0,
-      this.blockIndent = 0,
       this.listNumber = 0,
       this.e,
       this.textDecoration,
@@ -273,48 +271,24 @@ class Styler {
           case "blockquote":
             return Chunk(widget: [
               pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: <pw.Widget>[
-          // pw.Row(
-          //     crossAxisAlignment: pw.CrossAxisAlignment.start,
-          //     children: <pw.Widget>[
-          //       pw.Container(
-          //         width: 6,
-          //         height: 6,
-          //         margin: const pw.EdgeInsets.only(top: 5.5, left: 2, right: 5),
-          //         decoration: const pw.BoxDecoration(
-          //           color: p.PdfColors.grey200,
-          //           shape: pw.BoxShape.circle,
-          //         ),
-          //       ),
-          //     ]),
-          pw.Container(
-            decoration: const pw.BoxDecoration(
-                border: pw.Border(left: pw.BorderSide(color: p.PdfColors.grey400, width: 2)),
-                color: p.PdfColors.grey200),
-            padding: const pw.EdgeInsets.only(left: 10, top: 5, bottom: 5),
-            margin: const pw.EdgeInsets.only(left: 5),
-            child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children:
-                  widgetChildren(e, Style()),
-                ),
-          ),
-        ])]);
-            //   pw.Container(
-            //       child: pw.Wrap(
-            //           children:
-            //               widgetChildren(e, Style())),
-            //       padding: pw.EdgeInsets.all(5),
-            //       decoration: pw.BoxDecoration(
-            //           borderRadius: pw.BorderRadius.all(pw.Radius.circular(3)),
-            //           color: PdfColors.grey200))
-            // ]);
-          // widgetChildren(
-          //     e,
-          //     Style(
-          //         blockIndent: style.stack.last.blockIndent ?? -4 + 4)));
-
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: <pw.Widget>[
+                    pw.Container(
+                      decoration: const pw.BoxDecoration(
+                          border: pw.Border(
+                              left: pw.BorderSide(
+                                  color: p.PdfColors.grey400, width: 2)),
+                          color: p.PdfColors.grey200),
+                      padding:
+                          const pw.EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                      margin: const pw.EdgeInsets.only(left: 5),
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: widgetChildren(e, Style()),
+                      ),
+                    ),
+                  ])
+            ]);
           case "h1":
             return Chunk(
                 widget: widgetChildren(
