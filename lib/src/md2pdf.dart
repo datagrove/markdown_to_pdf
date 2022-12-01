@@ -314,6 +314,16 @@ class Styler {
                 widget: widgetChildren(
                     e, Style(weight: pw.FontWeight.bold, height: 14)));
           case "pre":
+            return Chunk(widget: [
+              pw.Container(
+                  child: pw.Row(
+                      children:
+                          widgetChildren(e, Style(font: pw.Font.courier()))),
+                  padding: pw.EdgeInsets.all(5),
+                  decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.all(pw.Radius.circular(3)),
+                      color: PdfColors.grey200))
+            ]);
           case "body":
             return Chunk(widget: widgetChildren(e, Style()));
           case "p":
