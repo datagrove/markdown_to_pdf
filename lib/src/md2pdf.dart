@@ -56,40 +56,57 @@ class _UrlText extends pw.StatelessWidget {
 
 // you will need to add more attributes here, just follow the pattern.
 class Style {
+  pw.Font? font;
   pw.FontWeight? weight;
   double? height;
   pw.FontStyle? fontStyle;
   pw.UrlLink? urlLink;
   p.PdfColor? color;
   int listNumber = 0;
+  pw.Container? container;
   int? listIndent;
+  int? blockIndent;
   pw.Widget? bullet;
+  pw.TextDecoration? textDecoration;
+  pw.BoxDecoration? boxDecoration;
   Node? e;
   Style(
-      {this.weight,
+      {this.font,
+      this.weight,
       this.height,
       this.fontStyle,
       this.color,
       this.bullet,
+      this.container,
       this.listIndent = 0,
+      this.blockIndent = 0,
       this.listNumber = 0,
-      this.e});
+      this.e,
+      this.textDecoration,
+      this.boxDecoration});
 
   Style merge(Style s) {
+    font ??= s.font;
     weight ??= s.weight;
     height ??= s.height;
     fontStyle ??= s.fontStyle;
     color ??= s.color;
+    container ??= s.container;
     bullet ??= s.bullet;
+    textDecoration ??= s.textDecoration;
+    boxDecoration ??= s.boxDecoration;
     return this;
   }
 
   pw.TextStyle style() {
     return pw.TextStyle(
+        font: font,
         fontWeight: weight,
         fontSize: height,
         color: color,
-        fontStyle: fontStyle);
+        fontStyle: fontStyle,
+        decoration: textDecoration,
+        background: boxDecoration);
   }
 }
 
@@ -218,7 +235,7 @@ class Styler {
             var ln;
             final cl = e.attributes["start"];
             if (cl != null) {
-              ln = int.parse(cl)-1;
+              ln = int.parse(cl) - 1;
             } else {
               ln = 0;
             }
@@ -253,6 +270,51 @@ class Styler {
                               children: wl)))
                 ]);
             return Chunk(widget: [w]);
+          case "blockquote":
+            return Chunk(widget: [
+              pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: <pw.Widget>[
+          // pw.Row(
+          //     crossAxisAlignment: pw.CrossAxisAlignment.start,
+          //     children: <pw.Widget>[
+          //       pw.Container(
+          //         width: 6,
+          //         height: 6,
+          //         margin: const pw.EdgeInsets.only(top: 5.5, left: 2, right: 5),
+          //         decoration: const pw.BoxDecoration(
+          //           color: p.PdfColors.grey200,
+          //           shape: pw.BoxShape.circle,
+          //         ),
+          //       ),
+          //     ]),
+          pw.Container(
+            decoration: const pw.BoxDecoration(
+                border: pw.Border(left: pw.BorderSide(color: p.PdfColors.grey400, width: 2)),
+                color: p.PdfColors.grey200),
+            padding: const pw.EdgeInsets.only(left: 10, top: 5, bottom: 5),
+            margin: const pw.EdgeInsets.only(left: 5),
+            child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children:
+                  widgetChildren(e, Style()),
+                ),
+          ),
+        ])]);
+            //   pw.Container(
+            //       child: pw.Wrap(
+            //           children:
+            //               widgetChildren(e, Style())),
+            //       padding: pw.EdgeInsets.all(5),
+            //       decoration: pw.BoxDecoration(
+            //           borderRadius: pw.BorderRadius.all(pw.Radius.circular(3)),
+            //           color: PdfColors.grey200))
+            // ]);
+          // widgetChildren(
+          //     e,
+          //     Style(
+          //         blockIndent: style.stack.last.blockIndent ?? -4 + 4)));
+
           case "h1":
             return Chunk(
                 widget: widgetChildren(
