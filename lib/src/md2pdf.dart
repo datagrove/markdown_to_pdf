@@ -195,7 +195,8 @@ class BorderStyle {
 class Chunk {
   List<pw.Widget>? widget;
   pw.TextSpan? text;
-  Chunk({this.widget, this.text});
+  pw.TableRow? tableRow;
+  Chunk({this.widget, this.text, this.tableRow});
 }
 
 // post order traversal of the html tree, recursively format each node.
@@ -235,6 +236,19 @@ class Styler {
     clear();
     style.pop();
     return r;
+  }
+
+  List<pw.TableRow> rowChildren(Node e, Style s) {
+    style.push(s, e);
+    List<pw.TableRow> rows = [];
+    for (var o in e.nodes) {
+      var ch = format(o);
+      if (ch.tableRow != null) {
+        rows.add(ch.tableRow!);
+      }
+    }
+    style.pop();
+    return rows;
   }
 
   pw.TextSpan inlineChildren(Node e, Style s) {
@@ -398,23 +412,22 @@ class Styler {
             ]);
           case "body":
             return Chunk(widget: widgetChildren(e, Style()));
+          //Create a table with the rows stored in rowChildren
           case "table":
-            return Chunk(widget: [
-              pw.Container(
-                  child: pw.Column(children: widgetChildren(e, Style())))
-            ]);
-          // case "thead":
+            return Chunk(widget: [pw.Table(children: rowChildren(e, Style()))]);
+          case "thead":
+          case "tbody":
           //   return Chunk(widget: [
           //     pw.Row(
           //         mainAxisAlignment: pw.MainAxisAlignment.center,
           //         crossAxisAlignment: pw.CrossAxisAlignment.center,
           //         children: widgetChildren(e, Style()))
           //   ]);
+          //For each tr tag create a tableRow with widgetChildren
+          //Table rows get returned to rowChildren
           case "tr":
-            return Chunk(widget: [
-              pw.Table(
-                  children: [pw.TableRow(children: widgetChildren(e, Style()))])
-            ]);
+            return Chunk(
+                tableRow: pw.TableRow(children: widgetChildren(e, Style())));
           case "th":
             return Chunk(widget: [
               pw.Container(
