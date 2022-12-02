@@ -48,6 +48,7 @@ class _UrlText extends pw.StatelessWidget {
       child: pw.Text(text,
           style: const pw.TextStyle(
             decoration: pw.TextDecoration.underline,
+            decorationColor: PdfColors.blue,
             color: PdfColors.blue,
           )),
     );
@@ -212,11 +213,16 @@ class Styler {
           // case "code":
           //   return Chunk(text: inlineChildren(e, Style()));
           case "code":
-            return Chunk(widget: [
-              pw.Container(
-                  color: PdfColors.grey,
-                  child: pw.Column(children: widgetChildren(e, Style())))
-            ]);
+            return Chunk(
+                text: inlineChildren(
+                    e,
+                    Style(
+                        boxDecoration: pw.BoxDecoration(
+                          color: PdfColors.grey200,
+                          borderRadius:
+                              pw.BorderRadius.all(pw.Radius.circular(3)),
+                        ),
+                        font: pw.Font.courier())));
           case "strong":
             return Chunk(
                 text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
@@ -225,7 +231,14 @@ class Styler {
                 text: inlineChildren(e, Style(fontStyle: pw.FontStyle.italic)));
           case "a":
             return Chunk(
-                text: inlineChildren(e, Style(color: PdfColors.green)));
+                widget: [_UrlText((e.innerHtml), (e.attributes["href"]!))]);
+          case "del":
+            return Chunk(
+                text: inlineChildren(
+                    e,
+                    Style(
+                        color: PdfColors.black,
+                        textDecoration: pw.TextDecoration.lineThrough)));
 
           // blocks can contain blocks or spans
           case "ul":
@@ -351,14 +364,15 @@ class Styler {
 mdtopdf(String path, String out) async {
   print(Directory.current);
   final md2 = await File(path).readAsString();
-  var htmlx = md.markdownToHtml(md2, inlineSyntaxes: [
-    md.InlineHtmlSyntax()
-  ], blockSyntaxes: [
-    const md.TableSyntax(),
-    md.FencedCodeBlockSyntax(),
-    md.HeaderWithIdSyntax(),
-    md.SetextHeaderWithIdSyntax(),
-  ]);
+  var htmlx = md.markdownToHtml(md2,
+      inlineSyntaxes: [md.InlineHtmlSyntax()],
+      blockSyntaxes: [
+        const md.TableSyntax(),
+        md.FencedCodeBlockSyntax(),
+        md.HeaderWithIdSyntax(),
+        md.SetextHeaderWithIdSyntax(),
+      ],
+      extensionSet: md.ExtensionSet.gitHubWeb);
   File("$out.html").writeAsString(htmlx);
   var document = parse(htmlx);
   if (document.body == null) {
