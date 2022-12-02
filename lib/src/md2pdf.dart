@@ -400,8 +400,8 @@ class Styler {
             return Chunk(widget: widgetChildren(e, Style()));
           case "table":
             return Chunk(widget: [
-              pw.Table(
-                  children: [pw.TableRow(children: widgetChildren(e, Style()))])
+              pw.Container(
+                  child: pw.Column(children: widgetChildren(e, Style())))
             ]);
           // case "thead":
           //   return Chunk(widget: [
