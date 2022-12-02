@@ -29,7 +29,7 @@ i18n with plurals support and easy syntax.</li>
 <p><strong>This is bold text</strong></p>
 <p><em>This is italic text</em></p>
 <p><em>This is italic text</em></p>
-<p>~~Strikethrough~~</p>
+<p><del>Strikethrough</del></p>
 <h2 id="blockquotes">Blockquotes</h2>
 <blockquote>
 <p>Blockquotes can also be nested...</p>
@@ -101,7 +101,7 @@ console.log(foo(5));
 <h2 id="links">Links</h2>
 <p><a href="http://dev.nodeca.com">link text</a></p>
 <p><a href="http://nodeca.github.io/pica/demo/" title="title text!">link with title</a></p>
-<p>Autoconverted link https://github.com/nodeca/pica (enable linkify to see)</p>
+<p>Autoconverted link <a href="https://github.com/nodeca/pica">https://github.com/nodeca/pica</a> (enable linkify to see)</p>
 <h2 id="images">Images</h2>
 <p><img src="https://octodex.github.com/images/minion.png" alt="Minion" />
 <img src="https://octodex.github.com/images/stormtroopocat.jpg" alt="Stormtroopocat" title="The Stormtroopocat" /></p>
@@ -113,7 +113,7 @@ console.log(foo(5));
 <a href="https://www.npmjs.org/browse/keyword/markdown-it-plugin">syntax plugins</a>.</p>
 <h3 id="emojieshttpsgithubcommarkdown-itmarkdown-it-emoji"><a href="https://github.com/markdown-it/markdown-it-emoji">Emojies</a></h3>
 <blockquote>
-<p>Classic markup: :wink: :crush: :cry: :tear: :laughing: :yum:</p>
+<p>Classic markup: 😉 :crush: 😢 :tear: 😆 😋</p>
 <p>Shortcuts (emoticons): :-) :-( 8-) ;)</p>
 </blockquote>
 <p>see <a href="https://github.com/markdown-it/markdown-it-emoji#change-output">how to change output</a> with twemoji.</p>
@@ -127,8 +127,14 @@ console.log(foo(5));
 <h3 id="markhttpsgithubcommarkdown-itmarkdown-it-mark"><a href="https://github.com/markdown-it/markdown-it-mark">&lt;mark&gt;</a></h3>
 <p>==Marked text==</p>
 <h3 id="footnoteshttpsgithubcommarkdown-itmarkdown-it-footnote"><a href="https://github.com/markdown-it/markdown-it-footnote">Footnotes</a></h3>
+<ol>
+<li>
 <p>Footnote 1 link[^first].</p>
+</li>
+<li>
 <p>Footnote 2 link[^second].</p>
+</li>
+</ol>
 <p>Inline footnote^[Text of inline footnote] definition.</p>
 <p>Duplicated footnote reference[^second].</p>
 <p>[^first]: Footnote <strong>can have markup</strong></p>

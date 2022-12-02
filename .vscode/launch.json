@@ -8,7 +8,7 @@
             "name": "markdown_to_pdf",
             "request": "launch",
             "type": "dart",
-            "program": "${workspaceFolder}/test/test.dart",
+            "program": "test/test.dart"
         }
     ]
 }
