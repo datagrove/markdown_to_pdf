@@ -55,6 +55,62 @@ class _UrlText extends pw.StatelessWidget {
   }
 }
 
+// class _contentTable extends pw.StatelessWidget {
+//   _contentTable(this.text, this.url);
+
+//   final String header;
+//   final String row;
+
+//   @override
+//   pw.Widget build(pw.Context context) {
+//     return pw.Table.fromTextArray(
+//       border: null,
+//       cellAlignment: pw.Alignment.centerLeft,
+//       headerDecoration: pw.BoxDecoration(
+//         borderRadius: const pw.BorderRadius.all(pw.Radius.circular(2)),
+//         color: PdfColors.grey100,
+//       ),
+//       headerHeight: 25,
+//       cellHeight: 40,
+//       cellAlignments: {
+//         0: pw.Alignment.centerLeft,
+//         1: pw.Alignment.centerLeft,
+//         2: pw.Alignment.centerRight,
+//         3: pw.Alignment.center,
+//         4: pw.Alignment.centerRight,
+//       },
+//       headerStyle: pw.TextStyle(
+//         color: PdfColors.grey600,
+//         fontSize: 10,
+//         fontWeight: pw.FontWeight.bold,
+//       ),
+//       cellStyle: const pw.TextStyle(
+//         color: PdfColors.black,
+//         fontSize: 10,
+//       ),
+//       rowDecoration: pw.BoxDecoration(
+//         border: pw.Border(
+//           bottom: pw.BorderSide(
+//             color: PdfColors.black,
+//             width: .5,
+//           ),
+//         ),
+//       ),
+//       headers: List<String>.generate(
+//         tableHeaders.length,
+//         (col) => tableHeaders[col],
+//       ),
+//       data: List<List<String>>.generate(
+//         products.length,
+//         (row) => List<String>.generate(
+//           tableHeaders.length,
+//           (col) => products[row].getIndex(col),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 // you will need to add more attributes here, just follow the pattern.
 class Style {
   pw.Font? font;
@@ -69,6 +125,7 @@ class Style {
   pw.Widget? bullet;
   pw.TextDecoration? textDecoration;
   pw.BoxDecoration? boxDecoration;
+  pw.TableRow? tableRow;
   Node? e;
   Style(
       {this.font,
@@ -82,7 +139,8 @@ class Style {
       this.listNumber = 0,
       this.e,
       this.textDecoration,
-      this.boxDecoration});
+      this.boxDecoration,
+      this.tableRow});
 
   Style merge(Style s) {
     font ??= s.font;
@@ -94,6 +152,7 @@ class Style {
     bullet ??= s.bullet;
     textDecoration ??= s.textDecoration;
     boxDecoration ??= s.boxDecoration;
+    tableRow ??= s.tableRow;
     return this;
   }
 
@@ -339,6 +398,39 @@ class Styler {
             ]);
           case "body":
             return Chunk(widget: widgetChildren(e, Style()));
+          case "table":
+            return Chunk(widget: [
+              pw.Table(
+                  children: [pw.TableRow(children: widgetChildren(e, Style()))])
+            ]);
+          // case "thead":
+          //   return Chunk(widget: [
+          //     pw.Row(
+          //         mainAxisAlignment: pw.MainAxisAlignment.center,
+          //         crossAxisAlignment: pw.CrossAxisAlignment.center,
+          //         children: widgetChildren(e, Style()))
+          //   ]);
+          case "tr":
+            return Chunk(widget: [
+              pw.Table(
+                  children: [pw.TableRow(children: widgetChildren(e, Style()))])
+            ]);
+          case "th":
+            return Chunk(widget: [
+              pw.Container(
+                  decoration: pw.BoxDecoration(border: pw.Border.all(width: 2)),
+                  child: pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
+                      children:
+                          widgetChildren(e, Style(weight: pw.FontWeight.bold))))
+            ]);
+          case "td":
+            return Chunk(widget: [
+              pw.Container(
+                  decoration: pw.BoxDecoration(border: pw.Border.all(width: 1)),
+                  child: pw.Column(children: widgetChildren(e, Style())))
+            ]);
           case "p":
             return Chunk(widget: widgetChildren(e, Style()));
           default:
