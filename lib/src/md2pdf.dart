@@ -373,35 +373,6 @@ class Styler {
             addRows(e.nodes[0], Style(weight: pw.FontWeight.bold));
             addRows(e.nodes[1], Style());
             return Chunk(widget: [pw.Table(children: ch)]);
-          // case "thead":
-          // case "tbody":
-          // //   return Chunk(widget: [
-          // //     pw.Row(
-          // //         mainAxisAlignment: pw.MainAxisAlignment.center,
-          // //         crossAxisAlignment: pw.CrossAxisAlignment.center,
-          // //         children: widgetChildren(e, Style()))
-          // //   ]);
-          // //For each tr tag create a tableRow with widgetChildren
-          // //Table rows get returned to rowChildren
-          // case "tr":
-          //   return Chunk(
-          //       tableRow: pw.TableRow(children: widgetChildren(e, Style())));
-          // case "th":
-          //   return Chunk(widget: [
-          //     pw.Container(
-          //         decoration: pw.BoxDecoration(border: pw.Border.all(width: 2)),
-          //         child: pw.Column(
-          //             mainAxisAlignment: pw.MainAxisAlignment.center,
-          //             crossAxisAlignment: pw.CrossAxisAlignment.center,
-          //             children:
-          //                 widgetChildren(e, Style(weight: pw.FontWeight.bold))))
-          //   ]);
-          // case "td":
-          //   return Chunk(widget: [
-          //     pw.Container(
-          //         decoration: pw.BoxDecoration(border: pw.Border.all(width: 1)),
-          //         child: pw.Column(children: widgetChildren(e, Style())))
-          //   ]);
           case "p":
             return Chunk(widget: widgetChildren(e, Style()));
           default:
