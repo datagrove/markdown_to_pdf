@@ -346,6 +346,7 @@ class Styler {
           //Create a table with the rows stored in rowChildren
           case "table":
             var ch = <pw.TableRow>[];
+            var cellfill = PdfColors.white;
             addRows(Node e, Style s) {
               for (var r in e.nodes) {
                 var cl = <pw.Widget>[];
@@ -363,11 +364,20 @@ class Styler {
                   }
                   c as Element;
                   if (c.localName == "th") {
-                    ws = widgetChildren(c, Style(weight: pw.FontWeight.bold));
+                    cellfill = PdfColors.grey300;
+                    ws = widgetChildren(
+                        c,
+                        Style(
+                          weight: pw.FontWeight.bold,
+                        ));
+                  } else {
+                    cellfill = PdfColors.white;
                   }
                   cl.add(pw.Column(children: ws, crossAxisAlignment: align));
                 }
-                ch.add(pw.TableRow(children: cl));
+                ch.add(pw.TableRow(
+                    children: cl,
+                    decoration: pw.BoxDecoration(color: cellfill)));
               }
             }
             addRows(e.nodes[0], Style(weight: pw.FontWeight.bold));
