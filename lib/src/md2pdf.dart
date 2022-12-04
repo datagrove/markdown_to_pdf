@@ -55,62 +55,6 @@ class _UrlText extends pw.StatelessWidget {
   }
 }
 
-// class _contentTable extends pw.StatelessWidget {
-//   _contentTable(this.text, this.url);
-
-//   final String header;
-//   final String row;
-
-//   @override
-//   pw.Widget build(pw.Context context) {
-//     return pw.Table.fromTextArray(
-//       border: null,
-//       cellAlignment: pw.Alignment.centerLeft,
-//       headerDecoration: pw.BoxDecoration(
-//         borderRadius: const pw.BorderRadius.all(pw.Radius.circular(2)),
-//         color: PdfColors.grey100,
-//       ),
-//       headerHeight: 25,
-//       cellHeight: 40,
-//       cellAlignments: {
-//         0: pw.Alignment.centerLeft,
-//         1: pw.Alignment.centerLeft,
-//         2: pw.Alignment.centerRight,
-//         3: pw.Alignment.center,
-//         4: pw.Alignment.centerRight,
-//       },
-//       headerStyle: pw.TextStyle(
-//         color: PdfColors.grey600,
-//         fontSize: 10,
-//         fontWeight: pw.FontWeight.bold,
-//       ),
-//       cellStyle: const pw.TextStyle(
-//         color: PdfColors.black,
-//         fontSize: 10,
-//       ),
-//       rowDecoration: pw.BoxDecoration(
-//         border: pw.Border(
-//           bottom: pw.BorderSide(
-//             color: PdfColors.black,
-//             width: .5,
-//           ),
-//         ),
-//       ),
-//       headers: List<String>.generate(
-//         tableHeaders.length,
-//         (col) => tableHeaders[col],
-//       ),
-//       data: List<List<String>>.generate(
-//         products.length,
-//         (row) => List<String>.generate(
-//           tableHeaders.length,
-//           (col) => products[row].getIndex(col),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 // you will need to add more attributes here, just follow the pattern.
 class Style {
   pw.Font? font;
@@ -236,19 +180,6 @@ class Styler {
     clear();
     style.pop();
     return r;
-  }
-
-  List<pw.TableRow> rowChildren(Node e, Style s) {
-    style.push(s, e);
-    List<pw.TableRow> rows = [];
-    for (var o in e.nodes) {
-      var ch = format(o);
-      if (ch.tableRow != null) {
-        rows.add(ch.tableRow!);
-      }
-    }
-    style.pop();
-    return rows;
   }
 
   pw.TextSpan inlineChildren(Node e, Style s) {
@@ -414,36 +345,63 @@ class Styler {
             return Chunk(widget: widgetChildren(e, Style()));
           //Create a table with the rows stored in rowChildren
           case "table":
-            return Chunk(widget: [pw.Table(children: rowChildren(e, Style()))]);
-          case "thead":
-          case "tbody":
+            var ch = <pw.TableRow>[];
+            addRows(Node e, Style s) {
+              for (var r in e.nodes) {
+                var cl = <pw.Widget>[];
+                for (var c in r.nodes) {
+                  var ws = widgetChildren(c, Style());
+                  var align = pw.CrossAxisAlignment.start;
+                  if (c.attributes["style"] != null) {
+                    if (c.attributes["style"] == "text-align: right;") {
+                      align = pw.CrossAxisAlignment.end;
+                    } else if (c.attributes["style"] == "text-align: center;") {
+                      align = pw.CrossAxisAlignment.center;
+                    } else if (c.attributes["style"] == "text-align: left;") {
+                      align = pw.CrossAxisAlignment.start;
+                    }
+                  }
+                  c as Element;
+                  if (c.localName == "th") {
+                    ws = widgetChildren(c, Style(weight: pw.FontWeight.bold));
+                  }
+                  cl.add(pw.Column(children: ws, crossAxisAlignment: align));
+                }
+                ch.add(pw.TableRow(children: cl));
+              }
+            }
+            addRows(e.nodes[0], Style(weight: pw.FontWeight.bold));
+            addRows(e.nodes[1], Style());
+            return Chunk(widget: [pw.Table(children: ch)]);
+          // case "thead":
+          // case "tbody":
+          // //   return Chunk(widget: [
+          // //     pw.Row(
+          // //         mainAxisAlignment: pw.MainAxisAlignment.center,
+          // //         crossAxisAlignment: pw.CrossAxisAlignment.center,
+          // //         children: widgetChildren(e, Style()))
+          // //   ]);
+          // //For each tr tag create a tableRow with widgetChildren
+          // //Table rows get returned to rowChildren
+          // case "tr":
+          //   return Chunk(
+          //       tableRow: pw.TableRow(children: widgetChildren(e, Style())));
+          // case "th":
           //   return Chunk(widget: [
-          //     pw.Row(
-          //         mainAxisAlignment: pw.MainAxisAlignment.center,
-          //         crossAxisAlignment: pw.CrossAxisAlignment.center,
-          //         children: widgetChildren(e, Style()))
+          //     pw.Container(
+          //         decoration: pw.BoxDecoration(border: pw.Border.all(width: 2)),
+          //         child: pw.Column(
+          //             mainAxisAlignment: pw.MainAxisAlignment.center,
+          //             crossAxisAlignment: pw.CrossAxisAlignment.center,
+          //             children:
+          //                 widgetChildren(e, Style(weight: pw.FontWeight.bold))))
           //   ]);
-          //For each tr tag create a tableRow with widgetChildren
-          //Table rows get returned to rowChildren
-          case "tr":
-            return Chunk(
-                tableRow: pw.TableRow(children: widgetChildren(e, Style())));
-          case "th":
-            return Chunk(widget: [
-              pw.Container(
-                  decoration: pw.BoxDecoration(border: pw.Border.all(width: 2)),
-                  child: pw.Column(
-                      mainAxisAlignment: pw.MainAxisAlignment.center,
-                      crossAxisAlignment: pw.CrossAxisAlignment.center,
-                      children:
-                          widgetChildren(e, Style(weight: pw.FontWeight.bold))))
-            ]);
-          case "td":
-            return Chunk(widget: [
-              pw.Container(
-                  decoration: pw.BoxDecoration(border: pw.Border.all(width: 1)),
-                  child: pw.Column(children: widgetChildren(e, Style())))
-            ]);
+          // case "td":
+          //   return Chunk(widget: [
+          //     pw.Container(
+          //         decoration: pw.BoxDecoration(border: pw.Border.all(width: 1)),
+          //         child: pw.Column(children: widgetChildren(e, Style())))
+          //   ]);
           case "p":
             return Chunk(widget: widgetChildren(e, Style()));
           default:
