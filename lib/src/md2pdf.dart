@@ -8,7 +8,6 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:pdf/pdf.dart' as p;
 import 'package:pdf/pdf.dart';
 import 'package:http/http.dart' as http;
-import 'package:dart_emoji/dart_emoji.dart';
 
 // computed style is a stack, each time we encounter an element like <p>... we push its style onto the stack, then pop it off at </p>
 // the top of the stack merges all of the styles of the parents.
@@ -45,17 +44,6 @@ Future<Uint8List> getImage(imageUrl) async {
   final bytes = response.bodyBytes;
   return bytes;
 }
-
-// class _GetImage extends pw.StatelessWidget {
-//   _GetImage(this.url);
-
-//   final String url;
-
-//   @override
-//   pw.Widget build(pw.Context context) {
-//     return pw.MemoryImage();
-//   }
-// }
 
 class _UrlText extends pw.StatelessWidget {
   _UrlText(this.text, this.url);
@@ -161,8 +149,7 @@ class BorderStyle {
 class Chunk {
   List<pw.Widget>? widget;
   pw.TextSpan? text;
-  pw.TableRow? tableRow;
-  Chunk({this.widget, this.text, this.tableRow});
+  Chunk({this.widget, this.text});
 }
 
 // post order traversal of the html tree, recursively format each node.
@@ -412,10 +399,10 @@ class Styler {
             addRows(e.nodes[0], Style(weight: pw.FontWeight.bold));
             addRows(e.nodes[1], Style());
             return Chunk(widget: [pw.Table(children: ch)]);
-          case "img":
-            var imageBody = getImage(e.attributes["src"]);
-            var imageRender = pw.MemoryImage(imageBody);
-            return Chunk(widget: [pw.Image(imageRender)]);
+          // case "img":
+          //   var imageBody = getImage(e.attributes["src"]);
+          //   var imageRender = pw.MemoryImage(imageBody);
+          //   return Chunk(widget: [pw.Image(imageRender)]);
           case "p":
             return Chunk(widget: widgetChildren(e, Style()));
           default:
