@@ -17,3 +17,4 @@ dependencies:
   http: ^0.13.5
   markdown: ^6.0.0
   pdf: ^3.8.3
+  dart_emoji: ^0.2.0+2
