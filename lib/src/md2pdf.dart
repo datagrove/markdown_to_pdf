@@ -93,8 +93,7 @@ class Style {
       this.listNumber = 0,
       this.e,
       this.textDecoration,
-      this.boxDecoration,
-      this.tableRow});
+      this.boxDecoration});
 
   Style merge(Style s) {
     font ??= s.font;
@@ -106,7 +105,6 @@ class Style {
     bullet ??= s.bullet;
     textDecoration ??= s.textDecoration;
     boxDecoration ??= s.boxDecoration;
-    tableRow ??= s.tableRow;
     return this;
   }
 
