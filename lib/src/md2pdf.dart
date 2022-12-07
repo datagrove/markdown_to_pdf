@@ -79,7 +79,6 @@ class Style {
   pw.Widget? bullet;
   pw.TextDecoration? textDecoration;
   pw.BoxDecoration? boxDecoration;
-  pw.TableRow? tableRow;
   Node? e;
   Style(
       {this.font,
