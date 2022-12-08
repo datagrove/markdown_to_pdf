@@ -155,14 +155,14 @@ class Styler {
 
   get text => null;
 
-  Chunk formatStyle(Node e, Style s) {
+  Future<Chunk> formatStyle(Node e, Style s) async {
     style.push(s, e);
-    var o = format(e);
+    var o = await format(e);
     style.pop();
     return o;
   }
 
-  List<pw.Widget> widgetChildren(Node e, Style s) {
+  Future<List<pw.Widget>> widgetChildren(Node e, Style s) async {
     style.push(s, e);
     List<pw.Widget> r = [];
     List<pw.TextSpan> spans = [];
@@ -175,7 +175,7 @@ class Styler {
     }
 
     for (var o in e.nodes) {
-      var ch = format(o);
+      var ch = await format(o);
       if (ch.widget != null) {
         clear();
         r = [...r, ...ch.widget!];
@@ -188,11 +188,11 @@ class Styler {
     return r;
   }
 
-  pw.TextSpan inlineChildren(Node e, Style s) {
+  Future<pw.TextSpan> inlineChildren(Node e, Style s) async {
     style.push(s, e);
     List<pw.InlineSpan> r = [];
     for (var o in e.nodes) {
-      var ch = format(o);
+      var ch = await format(o);
       if (ch.text != null) {
         r.add(ch.text!);
       }
@@ -208,7 +208,7 @@ class Styler {
 
   int i = 0;
 
-  Chunk format(Node e) {
+  Future<Chunk> format(Node e) async {
     switch (e.nodeType) {
       case Node.TEXT_NODE:
         return Chunk(
@@ -225,7 +225,7 @@ class Styler {
           //   return Chunk(text: inlineChildren(e, Style()));
           case "code":
             return Chunk(
-                text: inlineChildren(
+                text: await inlineChildren(
                     e,
                     Style(
                         boxDecoration: pw.BoxDecoration(
@@ -236,16 +236,18 @@ class Styler {
                         font: pw.Font.courier())));
           case "strong":
             return Chunk(
-                text: inlineChildren(e, Style(weight: pw.FontWeight.bold)));
+                text: 
+                await inlineChildren(e, Style(weight: pw.FontWeight.bold)));
           case "em":
             return Chunk(
-                text: inlineChildren(e, Style(fontStyle: pw.FontStyle.italic)));
+                text: await inlineChildren(
+                  e, Style(fontStyle: pw.FontStyle.italic)));
           case "a":
             return Chunk(
                 widget: [_UrlText((e.innerHtml), (e.attributes["href"]!))]);
           case "del":
             return Chunk(
-                text: inlineChildren(
+                text: await inlineChildren(
                     e,
                     Style(
                         color: PdfColors.black,
@@ -262,7 +264,7 @@ class Styler {
               ln = 0;
             }
             return Chunk(
-                widget: widgetChildren(
+                widget: await widgetChildren(
                     e,
                     Style(
                       bullet: e.localName == "ul" ? pw.Bullet() : null,
@@ -279,7 +281,7 @@ class Styler {
             final st = style.stack.last;
             final bullet =
                 st.bullet ?? pw.Text("${++style.parent().listNumber}");
-            final wl = widgetChildren(e, Style());
+            final wl = await widgetChildren(e, Style());
             final w = pw.Row(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: <pw.Widget>[
@@ -308,58 +310,58 @@ class Styler {
                       margin: const pw.EdgeInsets.only(left: 5),
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: widgetChildren(e, Style()),
+                        children: await widgetChildren(e, Style()),
                       ),
                     ),
                   ])
             ]);
           case "h1":
             return Chunk(
-                widget: widgetChildren(
+                widget: await widgetChildren(
                     e, Style(weight: pw.FontWeight.bold, height: 24)));
           case "h2":
             return Chunk(
-                widget: widgetChildren(
+                widget: await widgetChildren(
                     e, Style(weight: pw.FontWeight.bold, height: 22)));
           case "h3":
             return Chunk(
-                widget: widgetChildren(
+                widget: await widgetChildren(
                     e, Style(weight: pw.FontWeight.bold, height: 20)));
           case "h4":
             return Chunk(
-                widget: widgetChildren(
+                widget: await widgetChildren(
                     e, Style(weight: pw.FontWeight.bold, height: 18)));
           case "h5":
             return Chunk(
-                widget: widgetChildren(
+                widget: await widgetChildren(
                     e, Style(weight: pw.FontWeight.bold, height: 16)));
           case "h6":
             return Chunk(
-                widget: widgetChildren(
+                widget: await widgetChildren(
                     e, Style(weight: pw.FontWeight.bold, height: 14)));
           case "pre":
             return Chunk(widget: [
               pw.Container(
                   child: pw.Row(
-                      children:
-                          widgetChildren(e, Style(font: pw.Font.courier()))),
+                      children: await widgetChildren(
+                        e, Style(font: pw.Font.courier()))),
                   padding: pw.EdgeInsets.all(5),
                   decoration: pw.BoxDecoration(
                       borderRadius: pw.BorderRadius.all(pw.Radius.circular(3)),
                       color: PdfColors.grey200))
             ]);
           case "body":
-            return Chunk(widget: widgetChildren(e, Style()));
+            return Chunk(widget: await widgetChildren(e, Style()));
           //Create a table with the rows stored in rowChildren
           case "table":
             var ch = <pw.TableRow>[];
             var cellfill = PdfColors.white;
             var border = pw.Border.all(width: 1, color: PdfColors.white);
-            addRows(Node e, Style s) {
+            Future<void> addRows(Node e, Style s) async {
               for (var r in e.nodes) {
                 var cl = <pw.Widget>[];
                 for (var c in r.nodes) {
-                  var ws = widgetChildren(c, Style());
+                  var ws = await widgetChildren(c, Style());
                   var align = pw.CrossAxisAlignment.start;
                   if (c.attributes["style"] != null) {
                     if (c.attributes["style"] == "text-align: right;") {
@@ -376,7 +378,7 @@ class Styler {
                     border = pw.Border(
                         bottom: pw.BorderSide(width: 2),
                         top: pw.BorderSide(color: PdfColors.white));
-                    ws = widgetChildren(
+                    ws = await widgetChildren(
                         c,
                         Style(
                           weight: pw.FontWeight.bold,
@@ -396,15 +398,15 @@ class Styler {
             addRows(e.nodes[0], Style(weight: pw.FontWeight.bold));
             addRows(e.nodes[1], Style());
             return Chunk(widget: [pw.Table(children: ch)]);
-          // case "img":
-          //   var imageBody = getImage(e.attributes["src"]);
-          //   var imageRender = pw.MemoryImage(imageBody);
-          //   return Chunk(widget: [pw.Image(imageRender)]);
+          case "img":
+            var imageBody = await getImage(e.attributes["src"]);
+            var imageRender = pw.MemoryImage(imageBody);
+            return Chunk(widget: [pw.Image(imageRender)]);
           case "p":
-            return Chunk(widget: widgetChildren(e, Style()));
+            return Chunk(widget: await widgetChildren(e, Style()));
           default:
             print("${e.localName} is unknown");
-            return Chunk(widget: widgetChildren(e, Style()));
+            return Chunk(widget: await widgetChildren(e, Style()));
         }
       case Node.ENTITY_NODE:
       case Node.ENTITY_REFERENCE_NODE:
@@ -439,7 +441,7 @@ mdtopdf(String path, String out) async {
   if (document.body == null) {
     return;
   }
-  Chunk ch = Styler().format(document.body!);
+  Chunk ch = await Styler().format(document.body!);
   var doc = pw.Document();
   doc.addPage(pw.MultiPage(build: (context) => ch.widget ?? []));
   File(out).writeAsBytes(await doc.save());
